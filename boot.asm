@@ -22,7 +22,7 @@ VolumeID:           dd 0
 VolumeLabel:        db "NO NAME    ", 0
 FSType:             db "FAT12   "
 start:
-    mov ax, cs
+    mov ax, 0x07c0
     mov ds, ax
     mov es, ax
     mov ss, ax
@@ -35,14 +35,17 @@ clear_screen:
     add di, 2
     cmp di, 4000
     jne clear_screen
-    mov ah, 0x02
-    mov al, 1
-    mov ch, 0
-    mov cl, 2
-    mov dh, 0
-    mov dl, 0x00
-    mov bx, 0x10000
-    int 0x13
+
+    mov ah, 0x02          
+    mov al, 1            
+    mov ch, 0             
+    mov cl, 2             
+    mov dh, 0            
+    mov dl, 0x00          
+    mov bx, 0x10000      
+    int 0x13              
+    jc  error_loading     
+
     cli
     lgdt [gdt_ptr]
     mov eax, cr0
@@ -62,6 +65,32 @@ kernel_start:
 halt_loop:
     hlt
     jmp halt_loop
+
+error_loading:
+    mov si, load_error_msg
+    call print_string
+    cli
+    hlt
+    jmp $
+
+print_string:
+    pusha
+next_char:
+    mov al, [si]
+    cmp al, 0
+    je done
+    mov ah, 0x0e
+    mov bh, 0x00
+    mov bl, 0x0f
+    int 0x10
+    inc si
+    jmp next_char
+done:
+    popa
+    ret
+
+load_error_msg: db "Error loading kernel!", 0
+
 gdt_start:
     dd 0x0
     dw 0xFFFF, 0x0000, 0x9A00, 0x009A
