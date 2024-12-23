@@ -77,16 +77,18 @@ kernel_start:
     call kmain
 
     ; Infinite loop
+    cli
+halt_loop:
     hlt
-    jmp $
+    jmp halt_loop
 
 ; Global Descriptor Table (GDT)
 gdt_start:
     dd 0x0                ; Null descriptor
     ; Code segment (privilege level 0)
-    dw 0xFFFF, 0x0000, 0x9A00, 0x00CF
+    dw 0xFFFF, 0x0000, 0x9A00, 0x009A
     ; Data segment (privilege level 0)
-    dw 0xFFFF, 0x0000, 0x9200, 0x00CF
+    dw 0xFFFF, 0x0000, 0x9200, 0x0092
 gdt_end:
 
 gdt_ptr:
