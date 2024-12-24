@@ -7,7 +7,7 @@ LD = ld
 
 # ビルドオプション
 ASFLAGS = -f bin
-CFLAGS = -ffreestanding -m32 -nostdlib -nostdinc -c
+CFLAGS = -ffreestanding -m32 -nostdlib -nostdinc -Wall -Wextra -c
 LDFLAGS = -m elf_i386 -Ttext 0x1000 -nostdlib
 
 # ビルド対象
