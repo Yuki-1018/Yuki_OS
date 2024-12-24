@@ -17,31 +17,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y nasm build-essential bison flex libgmp3-dev libmpc-dev libmpfr-dev texinfo
 
-      - name: Install i686-elf-gcc
-        run: |
-          mkdir cross && cd cross
-          wget https://ftp.gnu.org/gnu/binutils/binutils-2.40.tar.gz
-          wget https://ftp.gnu.org/gnu/gcc/gcc-12.2.0/gcc-12.2.0.tar.gz
-          tar -xf binutils-2.40.tar.gz && tar -xf gcc-12.2.0.tar.gz
-          mkdir build-binutils build-gcc
-          
-
-          cd build-binutils
-          ../binutils-2.40/configure --target=i686-elf --prefix=/usr/local/cross --disable-nls --disable-werror
-          make -j$(nproc) && sudo make install
-          cd ..
-
-
-          cd gcc-12.2.0
-          ./contrib/download_prerequisites
-          cd ../build-gcc
-          ../gcc-12.2.0/configure --target=i686-elf --prefix=/usr/local/cross --disable-nls --enable-languages=c,c++ --without-headers
-          make all-gcc -j$(nproc) && sudo make install-gcc
-          make all-target-libgcc -j$(nproc) && sudo make install-target-libgcc
-          cd ../..
-
-          echo 'export PATH=/usr/local/cross/bin:$PATH' >> $GITHUB_ENV
-
+  
       - name: Build OS
         run: make
 
