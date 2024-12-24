@@ -5,8 +5,8 @@ boot.bin: boot.asm
 	nasm -f bin -o boot.bin boot.asm
 
 kernel.bin: kernel.c
-	i686-elf-gcc -ffreestanding -c kernel.c -o kernel.o
-	i686-elf-ld -o kernel.bin -Ttext 0x0800 --oformat binary kernel.o
+	gcc -ffreestanding -c kernel.c -o kernel.o
+	ld -o kernel.bin -Ttext 0x0800 --oformat binary kernel.o
 
 os.flp: boot.bin kernel.bin
 	dd if=/dev/zero of=os.flp bs=512 count=288
