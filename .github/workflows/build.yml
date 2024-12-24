@@ -25,13 +25,13 @@ jobs:
           tar -xf binutils-2.40.tar.gz && tar -xf gcc-12.2.0.tar.gz
           mkdir build-binutils build-gcc
           
-          # Build binutils
+
           cd build-binutils
           ../binutils-2.40/configure --target=i686-elf --prefix=/usr/local/cross --disable-nls --disable-werror
           make -j$(nproc) && sudo make install
           cd ..
 
-          # Build GCC
+
           cd gcc-12.2.0
           ./contrib/download_prerequisites
           cd ../build-gcc
