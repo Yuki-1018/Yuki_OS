@@ -1,28 +1,41 @@
-name: Build Yuki OS
+name: Build OS Image
 
 on:
   push:
+    branches:
+      - main
+  pull_request:
     branches:
       - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y nasm build-essential bison flex libgmp3-dev libmpc-dev libmpfr-dev texinfo
+      - name: Set up NASM
+        run: sudo apt-get install -y nasm
 
-  
-      - name: Build OS
-        run: make
+      - name: Set up GCC (32-bit)
+        run: sudo apt-get install -y gcc-multilib
+
+      - name: Build bootloader
+        run: nasm -f bin -o boot.bin boot.asm
+
+      - name: Build kernel
+        run: |
+          nasm -f elf -o start.o start.asm
+          gcc -m32 -ffreestanding -c kernel.c -o kernel.o
+          ld -m elf_i386 -Ttext 0x1000 -o kernel.bin start.o kernel.o
+
+      - name: Combine bootloader and kernel
+        run: cat boot.bin kernel.bin > os-image.bin
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: yuki-os-floppy
-          path: os.flp
+          name: os-image
+          path: os-image.bin
