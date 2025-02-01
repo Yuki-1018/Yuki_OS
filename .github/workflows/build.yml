@@ -1,4 +1,4 @@
-name: Build OS Image
+name: Build OS Image with GRUB
 
 on:
   push:
@@ -22,8 +22,8 @@ jobs:
       - name: Set up GCC (32-bit)
         run: sudo apt-get install -y gcc-multilib
 
-      - name: Build bootloader
-        run: nasm -f bin -o boot.bin boot.asm
+      - name: Set up GRUB
+        run: sudo apt-get install -y grub2-common xorriso
 
       - name: Build kernel
         run: |
@@ -31,11 +31,17 @@ jobs:
           gcc -m32 -ffreestanding -c kernel.c -o kernel.o
           ld -m elf_i386 -Ttext 0x1000 -o kernel.bin start.o kernel.o
 
-      - name: Combine bootloader and kernel
-        run: cat boot.bin kernel.bin > os-image.bin
+      - name: Prepare ISO directory
+        run: |
+          mkdir -p isodir/boot/grub
+          cp kernel.bin isodir/boot/kernel.bin
+          cp grub.cfg isodir/boot/grub/grub.cfg
+
+      - name: Create ISO image
+        run: grub-mkrescue -o yuki-os.iso isodir
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4.6.0
         with:
-          name: os-image
-          path: os-image.bin
+          name: yuki-os-iso
+          path: yuki-os.iso
