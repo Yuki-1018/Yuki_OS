@@ -1,12 +1,15 @@
-// kernel.c
-void print_string(const char* str) {
-    unsigned short* video_memory = (unsigned short*)0xb8000;
-    while (*str) {
-        *video_memory++ = (*str++ | 0x0700); // 白色文字
-    }
-}
-
 void main() {
-    print_string("Welcome to Yuki OS Kernel");
+    char* video_memory = (char*) 0xB8000;  // テキストモードのビデオメモリのアドレス
+    char* message = "Yuki OS Boot Success!";
+    int i = 0;
+
+    // メッセージをビデオメモリに書き込む
+    while (message[i] != 0) {
+        video_memory[i * 2] = message[i];  // 文字
+        video_memory[i * 2 + 1] = 0x07;    // 属性バイト (白文字、黒背景)
+        i++;
+    }
+
+    // 無限ループ
     while (1);
 }
