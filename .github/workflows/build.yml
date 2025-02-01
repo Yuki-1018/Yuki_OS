@@ -29,7 +29,7 @@ jobs:
         run: |
           nasm -f elf -o start.o start.asm
           gcc -m32 -ffreestanding -c kernel.c -o kernel.o
-          ld -m elf_i386 -Ttext 0x1000 -o kernel.bin start.o kernel.o
+          ld -m elf_i386 -Ttext 0x100000 -o kernel.bin start.o kernel.o
 
       - name: Prepare ISO directory
         run: |
